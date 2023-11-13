@@ -1,0 +1,118 @@
+-- Tabla de Blogs de Arte
+CREATE TABLE BlogsDeArte (
+    IdBlogsDeArte INT PRIMARY KEY,
+    Titulo VARCHAR(255) NOT NULL,
+    Contenido TEXT,
+    FechaPublicacion DATE
+);
+
+-- Tabla de Información del Artista
+CREATE TABLE InformacionArtista (
+    IdInformacionArtista INT PRIMARY KEY,
+    Artista VARCHAR(255) NOT NULL,
+    Biografia TEXT,
+    Estilo VARCHAR(100),
+    ObrasRelacionadas TEXT
+);
+-- Tabla de Obras de Arte
+CREATE TABLE PinturasDeArte (
+    IdPinturasDeArte INT PRIMARY KEY,
+	IdBlogsDeArte INT,
+    Titulo VARCHAR(255) NOT NULL,
+    Descripcion TEXT,
+    FotoPintura VARCHAR(100), 
+    Artista VARCHAR(255) NOT NULL,
+    Tecnica VARCHAR(100),
+    Dimensiones VARCHAR(50),
+    Disponibilidad BOOLEAN,
+	IdInformacionArtista INT,
+	FOREIGN KEY (IdInformacionArtista) REFERENCES InformacionArtista(IdInformacionArtista)
+	FOREIGN KEY (IdBlogsDeArte) REFERENCES BlogsDeArte(IdBlogsDeArte)
+
+
+);
+
+
+
+-- Tabla de Usuarios
+CREATE TABLE Usuarios (
+    IdUsuarios INT PRIMARY KEY,
+    NombreUsuario VARCHAR(50) UNIQUE NOT NULL,
+    ApellidoUsuario VARCHAR(50) UNIQUE NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Contraseña VARCHAR(255) NOT NULL
+    -- Otros campos de perfil (Nombre, Apellido, etc.)
+);
+
+-- Tabla de Carrito de Compras
+CREATE TABLE CarritoDeCompras (
+    IdCarritoDeCompras INT PRIMARY KEY,
+    IdUsuarios INT,
+    IdPinturasDeArte INT,
+    Cantidad INT,
+    FOREIGN KEY (IdUsuarios) REFERENCES Usuarios(IdUsuarios),
+    FOREIGN KEY (IdPinturasDeArte) REFERENCES PinturasDeArte(IdPinturasDeArte)
+);
+-- Tabla de Historial de Compras
+CREATE TABLE HistorialDeCompras (
+    IdHistorialDeCompras INT PRIMARY KEY,
+    IdUsuarios INT,
+    IdPinturasDeArte INT,
+    FechaCompra  DATE,
+    Descripcion VARCHAR(100) NOT NULL,
+    FOREIGN KEY (IdUsuarios) REFERENCES Usuarios(IdUsuarios),
+    FOREIGN KEY (IdPinturasDeArte) REFERENCES PinturasDeArte(IdPinturasDeArte)
+);
+
+-- Tabla de Reseñas y Calificaciones
+CREATE TABLE Resenias (
+    IdResenias INT PRIMARY KEY,
+    IdUsuarios INT,
+    IdPinturasDeArte INT,
+    Calificacion INT,
+    Comentario TEXT,
+    FOREIGN KEY (IdUsuarios) REFERENCES Usuarios(IdUsuarios),
+    FOREIGN KEY (IdPinturasDeArte) REFERENCES PinturasDeArte(IdPinturasDeArte)
+);
+
+
+
+
+-- Tabla de Roles
+CREATE TABLE Roles (
+    IdRoles INT PRIMARY KEY,
+    NombreRol VARCHAR(50) NOT NULL
+);
+
+-- Tabla de Usuarios y Roles (relación muchos a muchos)
+CREATE TABLE UsuariosRoles (
+    IdUsuarios INT,
+    IdRoles INT,
+    PRIMARY KEY (IdUsuarios, IdRoles),
+    FOREIGN KEY (IdUsuarios) REFERENCES Usuarios(IdUsuarios),
+    FOREIGN KEY (IdRoles) REFERENCES Roles(IdRoles)
+);
+
+-- Tabla de Permisos
+CREATE TABLE Permisos (
+    IdPermisos INT PRIMARY KEY,
+    NombrePermiso VARCHAR(50) UNIQUE NOT NULL
+);
+
+-- Tabla de Roles y Permisos (relación muchos a muchos)
+CREATE TABLE RolesPermisos (
+    IdRoles INT,
+    IdPermisos INT,
+    PRIMARY KEY (IdRoles, IdPermisos),
+    FOREIGN KEY (IdRoles) REFERENCES Roles(IdRoles),
+    FOREIGN KEY (IdPermisos) REFERENCES Permisos(IdPermisos)
+);
+
+-- Tabla de Asignación de Permisos a Usuarios Directamente
+CREATE TABLE UsuariosPermisos (
+    IdUsuarios INT,
+    IdPermisos INT,
+    PRIMARY KEY (IdUsuarios, IdPermisos),
+    FOREIGN KEY (IdUsuarios) REFERENCES Usuarios(IdUsuarios),
+    FOREIGN KEY (IdPermisos) REFERENCES Permisos(IdPermisos)
+);
